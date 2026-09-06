@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>La Peruana · ¡Gana tu Premio!</title>
+<style>
+:root{--burg:#7D1B2A;--burg2:#9e2236;--cream:#FDF0E8;--gold:#D4A017}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--burg);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden}
+.top{width:100%;background:var(--burg);padding:22px 18px 0;text-align:center}
+.logo-circle{width:70px;height:70px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:var(--burg);margin:0 auto 10px;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.top h1{color:#fff;font-size:22px;font-weight:900;line-height:1.2}
+.top p{color:rgba(255,255,255,.8);font-size:13px;margin-top:5px}
+.card{background:var(--cream);border-radius:24px 24px 0 0;width:100%;max-width:440px;margin-top:20px;padding:24px 20px 40px;flex:1}
+
+/* SCREENS */
+.screen{display:none}
+.screen.on{display:block}
+
+/* SCREEN 1 */
+.stars{color:var(--gold);font-size:28px;text-align:center;margin:10px 0}
+.s1-text{text-align:center;font-size:16px;font-weight:700;color:var(--burg);margin-bottom:6px}
+.s1-sub{text-align:center;font-size:13px;color:#666;margin-bottom:22px;line-height:1.5}
+.step-row{display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.step-n{width:28px;height:28px;background:var(--burg);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0}
+.step-info{flex:1}
+.step-t{font-weight:700;font-size:13px;color:#222}
+.step-s{font-size:11px;color:#888;margin-top:2px}
+.btn-google{display:block;width:100%;background:#4285F4;color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;text-align:center;margin-top:20px;text-decoration:none;transition:all .2s}
+.btn-google:hover{background:#3367d6}
+.btn-ya{display:none;width:100%;background:#fff;color:var(--burg);border:2px solid var(--burg);border-radius:14px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;text-align:center;margin-top:10px;transition:all .2s}
+.btn-ya:hover{background:var(--burg);color:#fff}
+
+/* SCREEN 2 — RULETA */
+.s2-title{text-align:center;font-size:18px;font-weight:800;color:var(--burg);margin-bottom:4px}
+.s2-sub{text-align:center;font-size:13px;color:#888;margin-bottom:16px}
+.wheel-wrap{position:relative;width:280px;height:280px;margin:0 auto 16px}
+.wheel-arrow{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:30px;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+canvas#wheel{border-radius:50%;box-shadow:0 8px 32px rgba(125,27,42,.3);display:block}
+.btn-spin{display:block;width:100%;background:var(--burg);color:#fff;border:none;border-radius:14px;padding:16px;font-size:18px;font-weight:900;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.btn-spin:disabled{opacity:.5;cursor:not-allowed}
+
+/* SCREEN 3 — PREMIO */
+.prize-icon{text-align:center;font-size:64px;margin:10px 0 6px;animation:pop .4s ease}
+@keyframes pop{0%{transform:scale(0)}80%{transform:scale(1.2)}100%{transform:scale(1)}}
+.prize-title{text-align:center;font-size:22px;font-weight:900;color:var(--burg)}
+.prize-name{text-align:center;font-size:18px;font-weight:700;color:#333;margin:6px 0 18px}
+.code-box{background:#fff;border:2px dashed var(--burg);border-radius:14px;padding:16px;text-align:center;margin-bottom:18px}
+.code-lbl{font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px}
+.code-val{font-size:28px;font-weight:900;color:var(--burg);letter-spacing:3px;margin-top:4px;font-family:monospace}
+.code-hint{font-size:11px;color:#aaa;margin-top:4px}
+.show-staff{background:var(--burg);color:#fff;border-radius:14px;padding:14px;text-align:center;font-size:14px;font-weight:700}
+.valid-badge{display:inline-block;background:#e8f5e9;color:#2e7d32;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-top:10px}
+.thanks{text-align:center;font-size:12px;color:#aaa;margin-top:16px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo-circle">LP</div>
+  <h1>La Peruana<br>Sanguchería Criolla</h1>
+  <p>Piura, Perú 🇵🇪</p>
+</div>
+
+<div class="card">
+
+  <!-- SCREEN 1: RESEÑA -->
+  <div class="screen on" id="s1">
+    <div class="stars">⭐⭐⭐⭐⭐</div>
+    <div class="s1-text">¡Califícanos y gana<br>una chicha gratis! 🍹</div>
+    <div class="s1-sub">Solo te toma 1 minuto.<br>¡Nos ayuda un montón!</div>
+
+    <div class="step-row">
+      <div class="step-n">1</div>
+      <div class="step-info">
+        <div class="step-t">Deja tu reseña en Google</div>
+        <div class="step-s">Toca el botón azul, ponle 5 estrellas y cuéntanos cómo te fue</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-n">2</div>
+      <div class="step-info">
+        <div class="step-t">Vuelve aquí y confirma</div>
+        <div class="step-s">Toca "Ya califiqué" cuando termines</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-n">3</div>
+      <div class="step-info">
+        <div class="step-t">¡Gira la ruleta y gana!</div>
+        <div class="step-s">Muestra tu premio al cajero antes de salir</div>
+      </div>
+    </div>
+
+    <a class="btn-google" id="btn-google"
+       href="https://www.google.com/maps?q=La+Peruana+Sangucheria+Criolla+Piura&lrd=0x904a1b443002ed1d:0x4ffaed60b0025bc1,3,,,,"
+       target="_blank" onclick="mostrarYaCalifique()">
+      ⭐ Calificar en Google
+    </a>
+    <button class="btn-ya" id="btn-ya" onclick="irARuleta()">
+      ✅ Ya califiqué — ¡Quiero girar!
+    </button>
+  </div>
+
+  <!-- SCREEN 2: RULETA -->
+  <div class="screen" id="s2">
+    <div class="s2-title">🎉 ¡Gracias por tu reseña!</div>
+    <div class="s2-sub">Gira la ruleta y descubre tu premio</div>
+
+    <div class="wheel-wrap">
+      <div class="wheel-arrow">▼</div>
+      <canvas id="wheel" width="280" height="280"></canvas>
+    </div>
+
+    <button class="btn-spin" id="btn-spin" onclick="girar()">🎰 ¡GIRAR!</button>
+  </div>
+
+  <!-- SCREEN 3: PREMIO -->
+  <div class="screen" id="s3">
+    <div class="prize-icon" id="p-icon">🍹</div>
+    <div class="prize-title">¡Felicitaciones!</div>
+    <div class="prize-name" id="p-name">Chicha morada gratis</div>
+
+    <div class="code-box">
+      <div class="code-lbl">Tu código de premio</div>
+      <div class="code-val" id="p-code">LP-0000</div>
+      <div class="code-hint">Válido solo hoy · <span id="p-fecha"></span></div>
+    </div>
+
+    <div class="show-staff">
+      📲 Muestra esta pantalla al cajero<br>para canjear tu premio
+    </div>
+    <div style="text-align:center"><span class="valid-badge">✓ Válido el día de hoy</span></div>
+    <div class="thanks">¡Gracias por visitarnos! Esperamos verte pronto 🤗</div>
+  </div>
+
+</div>
+
+<script>
+// ── PREMIOS (todos = chicha) ──
+const premios = [
+  {label:"Chicha\nmorada\ngratis",  icon:"🍹", color:"#7D1B2A", txt:"#fff"},
+  {label:"Chicha\nde jora\ngratis", icon:"🥤", color:"#A0242F", txt:"#fff"},
+  {label:"Chicha\nmorada\ngratis",  icon:"🍹", color:"#C13040", txt:"#fff"},
+  {label:"¡Chicha\nXXL\ngratis!",   icon:"🏆", color:"#D4A017", txt:"#fff"},
+  {label:"Chicha\nde jora\ngratis", icon:"🥤", color:"#7D1B2A", txt:"#fff"},
+  {label:"Chicha\nmorada\ngratis",  icon:"🍹", color:"#A0242F", txt:"#fff"},
+];
+
+const N = premios.length;
+const arc = (2 * Math.PI) / N;
+let spinning = false, currentAngle = 0, targetIdx = -1;
+
+function dibujar(ang) {
+  const c = document.getElementById("wheel");
+  const ctx = c.getContext("2d");
+  const cx = c.width/2, cy = c.height/2, r = cx - 4;
+  ctx.clearRect(0,0,c.width,c.height);
+
+  premios.forEach((p, i) => {
+    const start = ang + i * arc;
+    const end = start + arc;
+    // Segmento
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Texto
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + arc/2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = p.txt;
+    ctx.font = "bold 10px 'Segoe UI', sans-serif";
+    const lines = p.label.split("\n");
+    lines.forEach((l, li) => {
+      ctx.fillText(l, r - 10, (li - (lines.length-1)/2) * 13);
+    });
+    ctx.restore();
+  });
+
+  // Centro
+  ctx.beginPath();
+  ctx.arc(cx, cy, 22, 0, 2*Math.PI);
+  ctx.fillStyle = "#fff";
+  ctx.fill();
+  ctx.fillStyle = "#7D1B2A";
+  ctx.font = "bold 10px 'Segoe UI'";
+  ctx.textAlign = "center";
+  ctx.fillText("LP", cx, cy+4);
+}
+
+dibujar(currentAngle);
+
+function mostrarYaCalifique() {
+  setTimeout(() => {
+    document.getElementById("btn-ya").style.display = "block";
+  }, 2500);
+}
+
+function irARuleta() {
+  document.getElementById("s1").classList.remove("on");
+  document.getElementById("s2").classList.add("on");
+  dibujar(currentAngle);
+}
+
+function girar() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById("btn-spin").disabled = true;
+
+  // Elegir premio aleatorio
+  targetIdx = Math.floor(Math.random() * N);
+  // Calcular ángulo final: 5–8 vueltas + posición del premio
+  const vueltas = (5 + Math.random() * 3) * 2 * Math.PI;
+  const premioAngle = 2 * Math.PI - (targetIdx * arc + arc / 2) - Math.PI / 2;
+  const totalRotation = vueltas + premioAngle - (currentAngle % (2*Math.PI));
+  const duration = 4000 + Math.random() * 1000;
+  const start = performance.now();
+  const startAngle = currentAngle;
+
+  function frame(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const ease = 1 - Math.pow(1 - progress, 3);
+    currentAngle = startAngle + totalRotation * ease;
+    dibujar(currentAngle);
+    if (progress < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      spinning = false;
+      mostrarPremio();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function mostrarPremio() {
+  const p = premios[targetIdx];
+  document.getElementById("s2").classList.remove("on");
+  document.getElementById("s3").classList.add("on");
+  document.getElementById("p-icon").textContent = p.icon;
+  document.getElementById("p-name").textContent = p.label.replace(/\n/g, " ");
+
+  // Código único del día
+  const hoy = new Date();
+  const dd = String(hoy.getDate()).padStart(2,"0");
+  const mm = String(hoy.getMonth()+1).padStart(2,"0");
+  const rand = Math.random().toString(36).substring(2,6).toUpperCase();
+  document.getElementById("p-code").textContent = `LP-${dd}${mm}-${rand}`;
+  document.getElementById("p-fecha").textContent =
+    hoy.toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long"});
+}
+</script>
+</body>
+</html>
